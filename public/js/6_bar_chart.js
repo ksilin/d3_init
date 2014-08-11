@@ -5,9 +5,18 @@ for (var i = 0; i < 25; i++) {            //Loop 25 times
     dataset.push(newNumber);              //Add new number to array
 }
 
+var low = d3.min(dataset);
+var high = d3.max(dataset);
+var range = high - low;
+
+norm = function (x) {
+    return (x - low) / range
+}
+
 var w = 500;
 var h = 200;
 
+//separating bars
 var barPadding = 1;
 
 var svg = d3.select("svg")
@@ -21,7 +30,7 @@ var bars = svg.selectAll("rect")
 
 bars.attr("x", function (d, i) {
     return i * (w / dataset.length);
-})
+    })
     .attr("y", function (d) {
         return h - (d * 4);
     })
@@ -30,7 +39,11 @@ bars.attr("x", function (d, i) {
     })
     .attr("width", w / dataset.length - barPadding)
     .attr("fill", function (d) {
-        return "rgb(20, 20, " + (d * 8) + 50 + ")";
+
+        // 03FBF2 - 3, 251, 242 - light
+        // 163B48 - 22, 59, 72 - dark
+
+        return "rgb(10, " + (59 + Math.floor(192 * norm(d))) + ", " + (72 + Math.floor(170 * norm(d))) + ")";
     });
 
 svg.selectAll('text')
@@ -41,11 +54,11 @@ svg.selectAll('text')
         return d;
     })
     .attr('fill', 'white')
-    .attr("x", function(d, i) {
+    .attr("x", function (d, i) {
         return i * (w / dataset.length) + 4;
     })
     .attr("font-family", "sans-serif")
     .attr("font-size", "11px")
-    .attr("y", function(d) {
+    .attr("y", function (d) {
         return h - (d * 4) + 15;
     });
