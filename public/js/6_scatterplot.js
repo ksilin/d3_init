@@ -11,14 +11,12 @@ var dataset = [
     [ 220,   88 ]
 ];
 
-// TODO: generate randomlys
-//for (var i = 0; i < 25; i++) {            //Loop 25 times
-//    var newNumber = 5 + Math.floor(Math.random() * 30);   //New random number (0-30)
-//    dataset.push(newNumber);              //Add new number to array
-//}
-
-var low = d3.min(dataset);
-var high = d3.max(dataset);
+var low = d3.max(dataset.map(function(array) {
+    return array[1];
+}));
+var high = d3.min(dataset.map(function(array) {
+    return array[1];
+}));
 var range = high - low;
 
 norm = function (x) {
@@ -44,29 +42,29 @@ bars.attr("cx", function (d) {
     return d[0];
     })
     .attr("cy", function (d) {
-        return d[1];
+        return h - d[1];
     })
     .attr("r", function (d) {
-        return 5;
+        // mappign the values to the area of the circle, not it's radius
+        return Math.sqrt(d[1]*2);
+    })
+    .attr("fill", function (d) {
+        return "rgb(10, " + (59 + Math.floor(192 * norm(d[1]))) + ", " + (72 + Math.floor(170 * norm(d[1]))) + ")";
     });
-//    .attr("fill", function (d) {
 
-//        return "rgb(10, " + (59 + Math.floor(192 * norm(d))) + ", " + (72 + Math.floor(170 * norm(d))) + ")";
-//    });
-
-//svg.selectAll('text')
-//    .data(dataset)
-//    .enter()
-//    .append('text')
-//    .text(function (d) {
-//        return d;
-//    })
-//    .attr('fill', 'white')
-//    .attr("x", function (d, i) {
-//        return i * (w / dataset.length) + 4;
-//    })
-//    .attr("font-family", "sans-serif")
-//    .attr("font-size", "11px")
-//    .attr("y", function (d) {
-//        return h - (d * 4) + 15;
-//    });
+svg.selectAll('text')
+    .data(dataset)
+    .enter()
+    .append('text')
+    .text(function (d) {
+        return d;
+    })
+    .attr('fill', 'white')
+    .attr("x", function (d, i) {
+        return d[0] + 4;
+    })
+    .attr("font-family", "sans-serif")
+    .attr("font-size", "11px")
+    .attr("y", function (d) {
+        return h - d[1] + 15;
+    });
