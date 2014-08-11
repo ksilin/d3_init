@@ -1,22 +1,33 @@
 var dataset = [
-    [ 5,     20 ],
-    [ 480,   90 ],
-    [ 250,   50 ],
-    [ 100,   33 ],
-    [ 330,   95 ],
-    [ 410,   12 ],
-    [ 475,   44 ],
-    [ 25,    67 ],
-    [ 85,    21 ],
-    [ 220,   88 ]
+    [ 5, 20 ],
+    [ 480, 90 ],
+    [ 250, 50 ],
+    [ 100, 33 ],
+    [ 330, 95 ],
+    [ 410, 12 ],
+    [ 475, 44 ],
+    [ 25, 67 ],
+    [ 85, 21 ],
+    [ 220, 88 ]
 ];
 
-var low = d3.max(dataset.map(function(array) {
+var low = d3.max(dataset.map(function (array) {
     return array[1];
 }));
-var high = d3.min(dataset.map(function(array) {
+
+var high = d3.min(dataset.map(function (array) {
     return array[1];
 }));
+
+var greenScale = d3.scale.linear()
+    .domain([low, high])
+    .range([59, 255]);
+
+var blueScale = d3.scale.linear()
+    .domain([low, high])
+    .range([72, 255]);
+
+
 var range = high - low;
 
 norm = function (x) {
@@ -40,16 +51,16 @@ var bars = svg.selectAll("circle")
 
 bars.attr("cx", function (d) {
     return d[0];
-    })
+})
     .attr("cy", function (d) {
         return h - d[1];
     })
     .attr("r", function (d) {
         // mappign the values to the area of the circle, not it's radius
-        return Math.sqrt(d[1]*2);
+        return Math.sqrt(d[1] * 2);
     })
     .attr("fill", function (d) {
-        return "rgb(10, " + (59 + Math.floor(192 * norm(d[1]))) + ", " + (72 + Math.floor(170 * norm(d[1]))) + ")";
+        return "rgb(10, " + Math.floor(greenScale(d[1])) + ", " + Math.floor(blueScale(d[1])) + ")";
     });
 
 svg.selectAll('text')
