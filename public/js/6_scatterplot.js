@@ -8,11 +8,12 @@ var dataset = [
     [ 475, 44 ],
     [ 25, 67 ],
     [ 85, 21 ],
-    [ 220, 88 ]
+    [ 220, 88 ],
+    [ 600, 150 ]
 ];
 
 var w = 500;
-var h = 200;
+var h = 300;
 
 var padding = 25;
 
@@ -48,6 +49,11 @@ var yScale = d3.scale.linear()
         return d[1]
     })])
     .range([h - padding, padding]);
+
+
+var xAxis = d3.svg.axis()
+    .scale(xScale)
+    .orient('bottom');
 
 // ---
 
@@ -91,3 +97,8 @@ svg.selectAll('text')
     .attr("y", ("cy", function (d) {
         return yScale(d[1]) + 15;
     }));
+
+svg.append('g')
+    .attr('class', 'axis')
+    .attr("transform", "translate(0," + (h - padding) + ")")
+    .call(xAxis)
