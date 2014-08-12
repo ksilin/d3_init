@@ -1,16 +1,14 @@
-var dataset = [
-    [ 5, 20 ],
-    [ 480, 90 ],
-    [ 250, 50 ],
-    [ 100, 33 ],
-    [ 330, 95 ],
-    [ 410, 12 ],
-    [ 475, 44 ],
-    [ 25, 67 ],
-    [ 85, 21 ],
-    [ 220, 88 ],
-    [ 600, 150 ]
-];
+var dataset = [];
+var numDatapoints = 50;
+var xR = Math.random()*1000;
+var yR = Math.random()*1000;
+
+for(var i = 0; i < numDatapoints; i++){
+    var valX = Math.floor(Math.random()*xR);
+    var valY = Math.floor(Math.random()*yR);
+    dataset.push([valX, valY])
+}
+
 
 var w = 500;
 var h = 300;
@@ -41,7 +39,7 @@ var xScale = d3.scale.linear()
 
 var rScale = d3.scale.linear()
     .domain([low, high])
-    .range([12, 2])
+    .range([8, 2])
 
 
 var yScale = d3.scale.linear()
@@ -54,6 +52,10 @@ var yScale = d3.scale.linear()
 var xAxis = d3.svg.axis()
     .scale(xScale)
     .orient('bottom');
+
+var yAxis = d3.svg.axis()
+    .scale(yScale)
+    .orient('left');
 
 // ---
 
@@ -75,28 +77,32 @@ dots.attr("cx", function (d) {
     .attr("r", function (d) {
         // mapping the values to the area of the circle, not it's radius
         return rScale(d[1]);
-        //Math.sqrt(d[1] * 2);
     })
     .attr("fill", function (d) {
         return "rgb(10, " + greenScale(d[1]) + ", " + blueScale(d[1]) + ")";
     });
 
-svg.selectAll('text')
-    .data(dataset)
-    .enter()
-    .append('text')
-    .text(function (d) {
-        return d;
-    })
-    .attr('fill', 'white')
-    .attr("x", function (d) {
-        return xScale(d[0]) + 4
-    })
-    .attr("font-family", "sans-serif")
-    .attr("font-size", "11px")
-    .attr("y", ("cy", function (d) {
-        return yScale(d[1]) + 15;
-    }));
+//svg.selectAll('text')
+//    .data(dataset)
+//    .enter()
+//    .append('text')
+//    .text(function (d) {
+//        return d;
+//    })
+//    .attr('fill', 'white')
+//    .attr("x", function (d) {
+//        return xScale(d[0]) + 4
+//    })
+//    .attr("font-family", "sans-serif")
+//    .attr("font-size", "11px")
+//    .attr("y", ("cy", function (d) {
+//        return yScale(d[1]) + 15;
+//    }));
+
+svg.append('g')
+    .attr('class', 'axis')
+    .call(yAxis)
+    .attr("transform", "translate(" + padding + ", 0)")
 
 svg.append('g')
     .attr('class', 'axis')
