@@ -82,6 +82,8 @@ d3.select('p').on('click', function () {
     svg.selectAll("rect")
         .data(dataset)
         .transition()
+        .duration(1000)
+//        .ease('bounce')
         .attr("y", function (d) {
             return h - yScale(d);
         })
@@ -95,6 +97,8 @@ d3.select('p').on('click', function () {
     svg.selectAll("text")
         .data(dataset)
         .transition()
+        .duration(1000)
+//        .ease('bounce')
         .text(function (d) {
             return d;
         })
