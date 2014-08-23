@@ -1,13 +1,14 @@
 var dataset = [];
 
-var barCount = 50;
+var barCount = 20;
 var maxValue = 30;
 var valuePadding = 5;
 
 var refresh_data = function (dataset) {
+    count = (dataset.length == 0 ? barCount : dataset.length);
     dataset = []
     var dynMaxValue = (maxValue - Math.random() * 20);
-    for (var i = 0; i < barCount; i++) {
+    for (var i = 0; i < count; i++) {
         var newNumber = valuePadding + Math.floor(Math.random() * dynMaxValue);
         dataset.push(newNumber);
     }
@@ -86,16 +87,18 @@ svg.selectAll('text')
 d3.select('p').on('click', function () {
     dataset = refresh_data(dataset)
 
+    var newNumber = Math.floor(Math.random() * maxValue);
+    dataset.push(newNumber);
+
+    xScale.domain(d3.range(dataset.length));
     yScale.domain([0, d3.max(dataset)])
 
-    svg.selectAll("rect")
-        .data(dataset)
-        .transition()
-        .delay(function (d, i) {
-            return i / dataset.length * 500;
-        })
-        .duration(500)
-//        .ease('bounce')
+    var bars = svg.selectAll("rect")
+        .data(dataset);							//Re-bind data to existing bars, return the 'update' selection
+
+    bars.enter()
+        .append('rect')
+        .attr("x", w)
         .attr("y", function (d) {
             return yScale(d);
         })
@@ -105,6 +108,20 @@ d3.select('p').on('click', function () {
         .attr("height", function (d) {
             return h - yScale(d);
         });
+
+    bars.transition()
+        .duration(500)
+        .attr("x", function(d, i) {
+            return xScale(i);
+        })
+        .attr("y", function(d) {
+            return yScale(d);
+        })
+        .attr("width", xScale.rangeBand())
+        .attr("height", function(d) {
+            return h - yScale(d);
+        });
+
 
     svg.selectAll("text")
         .data(dataset)
