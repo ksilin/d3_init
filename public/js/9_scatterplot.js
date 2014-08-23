@@ -1,3 +1,7 @@
+// todo - dots expand on proximity, not on mouseover
+// either add invisible circle with mouse events
+// or distance calc - hmm there are no frames, when do I do distance calc?
+
 var dataset = [];
 var numDatapoints = 50;
 
@@ -95,7 +99,19 @@ var svg = d3.select("svg")
     .attr("width", w)
     .attr("height", h);
 
-var dots = svg.selectAll("circle")
+//Define clipping path
+svg.append("clipPath")
+    .attr("id", "chart-area")
+    .append("rect")
+    .attr("x", padding)
+    .attr("y", padding)
+    .attr("width", w - padding * 3)
+    .attr("height", h - padding * 2);
+
+var dots = svg.append("g")
+    .attr("id", "circles")
+    .attr("clip-path", "url(#chart-area)")
+    .selectAll("circle")
     .data(dataset)
     .enter()
     .append("circle");
