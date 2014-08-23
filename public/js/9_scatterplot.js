@@ -1,4 +1,3 @@
-
 var dataset = [];
 var numDatapoints = 50;
 
@@ -7,7 +6,7 @@ var h = 300;
 
 var padding = 25;
 
-var refreshData = function(dataset) {
+var refreshData = function (dataset) {
     dataset = []
     var xR = Math.random() * 1000;
     var yR = Math.random() * 1000;
@@ -42,7 +41,7 @@ var xScale = d3.scale.linear()
     .domain([0, d3.max(dataset, function (d) {
         return d[0]
     })])
-    .range([padding, w - padding*2]);
+    .range([padding, w - padding * 2]);
 
 var rScale = d3.scale.linear()
     .domain([low, high])
@@ -63,7 +62,7 @@ var yAxis = d3.svg.axis()
     .scale(yScale)
     .orient('left');
 
-var refreshScales = function(){
+var refreshScales = function () {
 
     var low = d3.max(dataset.map(function (array) {
         return array[1];
@@ -101,6 +100,30 @@ var dots = svg.selectAll("circle")
     .enter()
     .append("circle");
 
+// expand on mouseover
+dots.on('mouseover', function () {
+
+    d3.select(this)
+        .transition()
+        .attr("r", function (d) {
+            return rScale(d[1]);
+        })
+        .attr("fill", function (d) {
+            return "rgb(10, " + greenScale(d[1]) + ", " + blueScale(d[1]) + ")";
+        });
+});
+
+// collapse on mouseout
+dots.on('mouseout', function () {
+
+    d3.select(this)
+        .transition()
+        .attr("r", function (d) {
+            return 2;
+        })
+        .attr("fill", 'black');
+});
+
 dots.attr("cx", function (d) {
     return xScale(d[0])
 })
@@ -115,23 +138,23 @@ dots.attr("cx", function (d) {
         return "rgb(10, " + greenScale(d[1]) + ", " + blueScale(d[1]) + ")";
     });
 
-var refreshDots = function(){
+var refreshDots = function () {
     d3.selectAll('circle')
         .data(dataset)
         .transition()
         .duration(1000)
         // each("start", …) should be used only for immediate transformations, with no transitions.
-        .each("start", function() {
-            d3.select(this)
-                .attr('fill', 'darkgoldenrod')
-                .attr('r', 3);
-        })
-        .each('end', function(){
+        .each('end', function () {
             d3.select(this)
                 .transition()
                 .duration(3000)
                 .attr('fill', 'black')
                 .attr('r', 2)
+        })
+        .each("start", function () {
+            d3.select(this)
+                .attr('fill', 'darkgoldenrod')
+                .attr('r', 3);
         })
         .attr("cx", function (d) {
             return xScale(d[0])
@@ -180,7 +203,7 @@ svg.append('g')
     .attr("transform", "translate(0," + (h - padding) + ")")
     .call(xAxis)
 
-d3.select('p').on('click', function(){
+d3.select('p').on('click', function () {
     console.log('clicked');
     dataset = refreshData(dataset);
     refreshScales();
