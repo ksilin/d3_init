@@ -85,6 +85,7 @@ svg.selectAll('text')
     .attr("font-size", "11px");
 
 d3.select('p').on('click', function () {
+
     dataset = refresh_data(dataset)
 
     var newNumber = Math.floor(Math.random() * maxValue);
@@ -110,30 +111,44 @@ d3.select('p').on('click', function () {
         });
 
     bars.transition()
-        .duration(500)
-        .attr("x", function(d, i) {
-            return xScale(i);
-        })
-        .attr("y", function(d) {
-            return yScale(d);
-        })
-        .attr("width", xScale.rangeBand())
-        .attr("height", function(d) {
-            return h - yScale(d);
-        });
-
-
-    svg.selectAll("text")
-        .data(dataset)
-        .transition()
         .delay(function (d, i) {
             return i / dataset.length * 500;
         })
         .duration(500)
-//        .ease('bounce')
-        .text(function (d) {
-            return d;
+        .attr("x", function (d, i) {
+            return xScale(i);
         })
+        .attr("y", function (d) {
+            return yScale(d);
+        })
+        .attr("width", xScale.rangeBand())
+        .attr("height", function (d) {
+            return h - yScale(d);
+        });
+
+
+    var txt = svg.selectAll("text")
+        .data(dataset);
+
+    txt.enter()
+        .append('text');
+
+    txt.text(function (d) {
+        return d;
+    })
+        .attr('fill', 'white')
+        .attr("font-family", "sans-serif")
+        .attr("font-size", "11px")
+        .attr("x", w)
+        .attr("y", function (d) {
+            return yScale(d) + 14;
+        });
+
+    txt.transition()
+        .delay(function (d, i) {
+            return i / dataset.length * 500;
+        })
+        .duration(500)
         .attr("x", function (d, i) {
             return xScale(i) + xScale.rangeBand() / 2 - 6;
         })
@@ -141,14 +156,13 @@ d3.select('p').on('click', function () {
             return yScale(d) + 14;
         });
 
-    d3.select('.y.axis')
-        .transition()
-        .duration(1000)
-        .call(yAxis);
-
+//    d3.select('.y.axis')
+//        .transition()
+//        .duration(1000)
+//        .call(yAxis);
 })
 
-svg.append('g')
-    .attr('class', 'y axis')
-    .call(yAxis)
-    .attr("transform", "translate(" + 30 + ", 0)")
+//svg.append('g')
+//    .attr('class', 'y axis')
+//    .call(yAxis)
+//    .attr("transform", "translate(" + 30 + ", 0)")
