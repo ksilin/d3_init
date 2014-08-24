@@ -26,81 +26,13 @@ norm = function (x) {
     return (x - low) / range
 }
 
-var w = 600;
-var h = 300;
 
-var xScale = d3.scale.ordinal()
-    .domain(d3.range(dataset.length))
-    .rangeRoundBands([padding, w - padding], 0.05);
-
-var yScale = d3.scale.linear()
-    .domain([0, d3.max(dataset)])
-    .range([h, 0]);
-
-var yAxis = d3.svg.axis()
-    .scale(yScale)
-    .orient('left');
-
-var svg = d3.select("svg")
-    .attr("width", w)
-    .attr("height", h);
-
-var barGroup = svg.append('g')
-    .attr('class', 'barGroup');
-
-var bars = barGroup.selectAll("rect")
-    .data(dataset)
-    .enter()
-    .append("rect");
-
-bars.attr("x", function (d, i) {
-    return xScale(i);
-})
-    .attr("y", function (d) {
-        return yScale(d);
-    })
-    .attr("height", function (d) {
-        return h - yScale(d);
-    })
-    .attr("width", xScale.rangeBand())
-    .attr("fill", function (d) {
-
-        // 03FBF2 - 3, 251, 242 - light
-        // 163B48 - 22, 59, 72 - dark
-
-        return "rgb(10, " + (59 + Math.floor(192 * norm(d))) + ", " + (72 + Math.floor(170 * norm(d))) + ")";
-    });
-
-var textGgroup = svg.append('g')
-    .attr('class', 'txtGroup');
-
-textGgroup.selectAll('text')
-    .data(dataset)
-    .enter()
-    .append('text')
-    .text(function (d) {
-        return d;
-    })
-    .attr('fill', 'white')
-    .attr("x", function (d, i) {
-        return xScale(i) + xScale.rangeBand() / 2 - 6;
-    })
-    .attr("y", function (d) {
-        return yScale(d) + 14;
-    })
-    .attr("font-family", "sans-serif")
-    .attr("font-size", "11px");
-
-d3.select('p').on('click', function () {
-
-    dataset = refresh_data(dataset)
-
+function addNumberToDataset(dataset) {
     var newNumber = Math.floor(Math.random() * maxValue);
     dataset.push(newNumber);
+}
 
-    xScale.domain(d3.range(dataset.length));
-    yScale.domain([0, d3.max(dataset)])
-
+function makeBars() {
     var bars = barGroup.selectAll("rect")
         .data(dataset);							//Re-bind data to existing bars, return the 'update' selection
 
@@ -128,12 +60,16 @@ d3.select('p').on('click', function () {
         .attr("y", function (d) {
             return yScale(d);
         })
+        .attr("fill", function (d) {
+            return "rgb(10, " + (59 + Math.floor(192 * norm(d))) + ", " + (72 + Math.floor(170 * norm(d))) + ")";
+        })
         .attr("width", xScale.rangeBand())
         .attr("height", function (d) {
             return h - yScale(d);
         });
+}
 
-
+function makeLabels() {
     var txt = textGgroup.selectAll("text")
         .data(dataset);
 
@@ -142,7 +78,7 @@ d3.select('p').on('click', function () {
 
     txt.text(function (d) {
         return d;
-        })
+    })
         .attr('fill', 'white')
         .attr("font-family", "sans-serif")
         .attr("font-size", "11px")
@@ -162,6 +98,45 @@ d3.select('p').on('click', function () {
         .attr("y", function (d) {
             return yScale(d) + 14;
         });
+}
+
+var w = 600;
+var h = 300;
+
+var xScale = d3.scale.ordinal()
+    .domain(d3.range(dataset.length))
+    .rangeRoundBands([padding, w - padding], 0.05);
+
+var yScale = d3.scale.linear()
+    .domain([0, d3.max(dataset)])
+    .range([h, 0]);
+
+var yAxis = d3.svg.axis()
+    .scale(yScale)
+    .orient('left');
+
+var svg = d3.select("svg")
+    .attr("width", w)
+    .attr("height", h);
+
+var barGroup = svg.append('g')
+    .attr('class', 'barGroup');
+makeBars();
+
+var textGgroup = svg.append('g')
+    .attr('class', 'txtGroup');
+makeLabels();
+
+d3.select('p').on('click', function () {
+
+    dataset = refresh_data(dataset)
+    addNumberToDataset(dataset);
+
+    xScale.domain(d3.range(dataset.length));
+    yScale.domain([0, d3.max(dataset)])
+
+    makeBars();
+    makeLabels();
 
     d3.select('.y.axis')
         .transition()
@@ -171,5 +146,5 @@ d3.select('p').on('click', function () {
 
 svg.append('g')
     .attr('class', 'y axis')
-    .call(yAxis)
     .attr("transform", "translate(" + 30 + ", 0)")
+    .call(yAxis)
