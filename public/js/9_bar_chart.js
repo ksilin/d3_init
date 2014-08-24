@@ -42,14 +42,15 @@ function makeBars() {
         .attr("y", function (d) {
             return yScale(d);
         })
-        .attr("fill", function (d) {
-            return "rgb(10, " + (59 + Math.floor(192 * norm(d))) + ", " + (72 + Math.floor(170 * norm(d))) + ")";
-        })
         .attr("height", function (d) {
             return h - yScale(d);
         });
 
     bars.transition()
+        .attr("fill", function (d) {
+            return "rgb(10, " + (59 + Math.floor(192 * norm(d))) + ", " + (72 + Math.floor(170 * norm(d))) + ")";
+            //    return "rgb(10, " + greenScale(d) + ", " + blueScale(d) + ")";
+        })
         .delay(function (d, i) {
             return i / dataset.length * 500;
         })
@@ -62,6 +63,7 @@ function makeBars() {
         })
         .attr("fill", function (d) {
             return "rgb(10, " + (59 + Math.floor(192 * norm(d))) + ", " + (72 + Math.floor(170 * norm(d))) + ")";
+            // return "rgb(10, " + greenScale(d) + ", " + blueScale(d) + ")";
         })
         .attr("width", xScale.rangeBand())
         .attr("height", function (d) {
@@ -70,6 +72,7 @@ function makeBars() {
 }
 
 function makeLabels() {
+
     var txt = textGgroup.selectAll("text")
         .data(dataset);
 
@@ -100,16 +103,30 @@ function makeLabels() {
         });
 }
 
+function refreshScales() {
+    xScale.domain(d3.range(dataset.length));
+    yScale.domain([0, d3.max(dataset)]);
+
+    greenScale.domain([0, d3.max(dataset)]);
+    blueScale.domain([0, d3.max(dataset)]);
+}
+
 var w = 600;
 var h = 300;
 
 var xScale = d3.scale.ordinal()
-    .domain(d3.range(dataset.length))
     .rangeRoundBands([padding, w - padding], 0.05);
 
 var yScale = d3.scale.linear()
-    .domain([0, d3.max(dataset)])
     .range([h, 0]);
+
+var greenScale = d3.scale.linear()
+    .range([59, 251]);
+
+var blueScale = d3.scale.linear()
+    .range([72, 242]);
+
+refreshScales();
 
 var yAxis = d3.svg.axis()
     .scale(yScale)
@@ -131,10 +148,7 @@ d3.select('p').on('click', function () {
 
     dataset = refresh_data(dataset)
     addNumberToDataset(dataset);
-
-    xScale.domain(d3.range(dataset.length));
-    yScale.domain([0, d3.max(dataset)])
-
+    refreshScales();
     makeBars();
     makeLabels();
 
