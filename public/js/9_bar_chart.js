@@ -1,6 +1,6 @@
 var dataset = [];
 
-var key = function(d) {
+var key = function (d) {
     return d.key;
 };
 
@@ -32,14 +32,17 @@ var norm = function (x) {
 
 function addNumberToDataset(dataset) {
     var newNumber = Math.floor(Math.random() * maxValue);
-    dataset.push(newNumber);
+    var lastKey = dataset[dataset.length - 1].key;
+    dataset.push({key: lastKey + 1, value: newNumber});
 }
 
 function removeNumberFromDataset(dataset) {
-    // for some reason, results of shift() and pop() look exactly the same.
+    // results of shift() and pop() look unexpectedly different.
+    // when shifted, the bars rebuild themselves,
+    // when popped, the bars just ehm...shift
     // I suppose it has something to do with object constancy.
-//    dataset.pop();
-    dataset.shift();
+    dataset.pop();
+//    dataset.shift();
 }
 
 function makeBars() {
@@ -59,7 +62,7 @@ function makeBars() {
     bars.exit()
         .transition()
         .duration(500)
-        .attr("x", -xScale.rangeBand())
+        .attr("x", w)
         .remove();
 
     bars.transition()
@@ -93,30 +96,30 @@ function makeLabels() {
         .data(dataset);
 
     txt.enter()
-        .append('text');
+        .append('text')
+        .text(function (d) {
+            return d.value;
+        })
+        .attr("x", w);
 
     txt.exit()
         .transition()
         .duration(500)
-        .attr("x", -xScale.rangeBand())
+        .attr("x", w)
         .remove();
 
-    txt.text(function (d) {
-        return d.value;
-    })
-        .attr('fill', 'white')
+    txt.attr('fill', 'white')
         .attr("font-family", "sans-serif")
         .attr("font-size", "11px")
-        .attr("x", function (d, i) {
-            return xScale(i) + xScale.rangeBand() / 2 - 6;
-        })
-        .attr("y", padding);
 
     txt.transition()
         .delay(function (d, i) {
             return i / dataset.length * 500;
         })
         .duration(500)
+        .text(function (d) {
+            return d.value;
+        })
         .attr("x", function (d, i) {
             return xScale(i) + xScale.rangeBand() / 2 - 6;
         })
@@ -127,10 +130,16 @@ function makeLabels() {
 
 function refreshScales() {
     xScale.domain(d3.range(dataset.length));
-    yScale.domain([0, d3.max(dataset, function(d){return d.value;})]);
+    yScale.domain([0, d3.max(dataset, function (d) {
+        return d.value;
+    })]);
 
-    greenScale.domain([0, d3.max(dataset, function(d){return d.value;})]);
-    blueScale.domain([0, d3.max(dataset, function(d){return d.value;})]);
+    greenScale.domain([0, d3.max(dataset, function (d) {
+        return d.value;
+    })]);
+    blueScale.domain([0, d3.max(dataset, function (d) {
+        return d.value;
+    })]);
 }
 
 var w = 600;
@@ -167,7 +176,6 @@ var textGgroup = svg.append('g')
 makeLabels();
 
 function refreshEverything() {
-    dataset = refresh_data(dataset)
     refreshScales();
     makeBars();
     makeLabels();
@@ -177,6 +185,11 @@ function refreshEverything() {
         .duration(1000)
         .call(yAxis);
 }
+
+d3.select('p.generator').on('click', function () {
+    dataset = refresh_data(dataset)
+    refreshEverything();
+})
 
 d3.select('p.adder').on('click', function () {
     addNumberToDataset(dataset);
