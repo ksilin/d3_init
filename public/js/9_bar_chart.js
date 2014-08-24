@@ -1,3 +1,7 @@
+//TODO: well that was great, now I owuld like to see some work done for me:
+// use a histogram layout: https://github.com/mbostock/d3/wiki/Histogram-Layout
+// for example as duration overview: http://bl.ocks.org/mbostock/3048166
+
 var dataset = [];
 
 var key = function (d) {
