@@ -20,6 +20,7 @@ dataset = refresh_data(dataset);
 var low = d3.min(dataset);
 var high = d3.max(dataset);
 var range = high - low;
+var padding = 30;
 
 norm = function (x) {
     return (x - low) / range
@@ -30,7 +31,7 @@ var h = 300;
 
 var xScale = d3.scale.ordinal()
     .domain(d3.range(dataset.length))
-    .rangeRoundBands([0, w], 0.05);
+    .rangeRoundBands([padding, w - padding], 0.05);
 
 var yScale = d3.scale.linear()
     .domain([0, d3.max(dataset)])
@@ -44,7 +45,10 @@ var svg = d3.select("svg")
     .attr("width", w)
     .attr("height", h);
 
-var bars = svg.selectAll("rect")
+var barGroup = svg.append('g')
+    .attr('class', 'barGroup');
+
+var bars = barGroup.selectAll("rect")
     .data(dataset)
     .enter()
     .append("rect");
@@ -67,7 +71,10 @@ bars.attr("x", function (d, i) {
         return "rgb(10, " + (59 + Math.floor(192 * norm(d))) + ", " + (72 + Math.floor(170 * norm(d))) + ")";
     });
 
-svg.selectAll('text')
+var textGgroup = svg.append('g')
+    .attr('class', 'txtGroup');
+
+textGgroup.selectAll('text')
     .data(dataset)
     .enter()
     .append('text')
@@ -94,7 +101,7 @@ d3.select('p').on('click', function () {
     xScale.domain(d3.range(dataset.length));
     yScale.domain([0, d3.max(dataset)])
 
-    var bars = svg.selectAll("rect")
+    var bars = barGroup.selectAll("rect")
         .data(dataset);							//Re-bind data to existing bars, return the 'update' selection
 
     bars.enter()
@@ -127,7 +134,7 @@ d3.select('p').on('click', function () {
         });
 
 
-    var txt = svg.selectAll("text")
+    var txt = textGgroup.selectAll("text")
         .data(dataset);
 
     txt.enter()
@@ -135,7 +142,7 @@ d3.select('p').on('click', function () {
 
     txt.text(function (d) {
         return d;
-    })
+        })
         .attr('fill', 'white')
         .attr("font-family", "sans-serif")
         .attr("font-size", "11px")
@@ -156,13 +163,13 @@ d3.select('p').on('click', function () {
             return yScale(d) + 14;
         });
 
-//    d3.select('.y.axis')
-//        .transition()
-//        .duration(1000)
-//        .call(yAxis);
+    d3.select('.y.axis')
+        .transition()
+        .duration(1000)
+        .call(yAxis);
 })
 
-//svg.append('g')
-//    .attr('class', 'y axis')
-//    .call(yAxis)
-//    .attr("transform", "translate(" + 30 + ", 0)")
+svg.append('g')
+    .attr('class', 'y axis')
+    .call(yAxis)
+    .attr("transform", "translate(" + 30 + ", 0)")
