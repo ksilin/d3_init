@@ -63,6 +63,7 @@ svg.selectAll('text')
     .data(dataset)
     .enter()
     .append('text')
+    .style("pointer-events", "none")
     .text(function (d) {
         return d;
     })
